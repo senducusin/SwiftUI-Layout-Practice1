@@ -12,17 +12,7 @@ struct ContentView: View {
     @State private var products: [Product] = []
     
     var body: some View {
-        ScrollView {
-            VStack {
-                ForEach(products) { product in
-                    Text(product.title)
-                }
-            }
-        }
-        .padding()
-        .task {
-            await getData()
-        }
+        HomeView()
     }
     
     private func getData() async {
