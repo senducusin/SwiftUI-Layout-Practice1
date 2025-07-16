@@ -12,7 +12,7 @@ struct ProductResult: Codable {
     let total, skip, limit: Int
 }
 
-struct Product: Codable, Identifiable {
+struct Product: Codable, Identifiable, Hashable {
     let id: Int
     let title, description: String
     let price, discountPercentage, rating: Double
@@ -21,4 +21,8 @@ struct Product: Codable, Identifiable {
     let category: String
     let images: [String]
     let thumbnail: String
+    
+    var firstImage: String {
+        images.first ?? Constants.randomImage
+    }
 }

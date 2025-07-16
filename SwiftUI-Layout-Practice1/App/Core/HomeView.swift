@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import SwiftfulUI
 
 struct HomeView: View {
     @State private var currentUser: User? = nil
     @State private var selectedCategory: Category? = nil
+    @State private var products = [Product]()
     
     var body: some View {
         ZStack {
@@ -18,6 +20,11 @@ struct HomeView: View {
             ScrollView(.vertical) {
                 LazyVStack(pinnedViews: [.sectionHeaders], content: {
                     Section {
+                        VStack {
+                            ProductGridSection(products: products)
+                        }
+                        .padding(.horizontal, 16)
+                        
                         ForEach(0..<20) { _ in
                             Rectangle()
                                 .frame(width: 200, height: 200)
@@ -40,6 +47,7 @@ struct HomeView: View {
     private func getData() async {
         do {
             currentUser = try await MockDataHelper().getUsers().last
+            products = try await Array(MockDataHelper().getProducts().prefix(8))
         } catch { }
     }
     
@@ -56,7 +64,6 @@ struct HomeView: View {
                 }
             }
             .frame(width: 35, height: 35)
-
             
             ScrollView(.horizontal) {
                 HStack(spacing: 8) {
