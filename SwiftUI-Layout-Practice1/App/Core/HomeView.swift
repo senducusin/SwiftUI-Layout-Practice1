@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import SwiftfulUI
 
 struct HomeView: View {
     @State private var currentUser: User? = nil
     @State private var selectedCategory: Category? = nil
     @State private var products = [Product]()
+    @State private var productRows = [ProductRow]()
     
     var body: some View {
         ZStack {
@@ -20,18 +22,18 @@ struct HomeView: View {
                 LazyVStack(pinnedViews: [.sectionHeaders], content: {
                     Section {
                         VStack(spacing: 16) {
-                            ProductGridSection(products: products)
+                            recentsSection
+                                .padding(.horizontal, 16)
                             
                             if let product = products.first {
                                 newReleaseSection(product: product)
+                                    .padding(.horizontal, 16)
                             }
+                            
+                            featuredSection
                         }
                         .padding(.horizontal, 16)
                         
-                        ForEach(0..<20) { _ in
-                            Rectangle()
-                                .frame(width: 200, height: 200)
-                        }
                     } header: {
                         header
                     }
@@ -51,6 +53,18 @@ struct HomeView: View {
         do {
             currentUser = try await MockDataHelper().getUsers().last
             products = try await Array(MockDataHelper().getProducts().prefix(8))
+            
+            var rows = [ProductRow]()
+            let allBrands: Set<String> = Set(products.compactMap { $0.brand })
+            
+            for brand in allBrands {
+                /// add after finalizing the mock data
+//                let products = products.filter { $0.brand == brand }
+                rows.append(ProductRow(title: brand.capitalized,
+                                       products: products))
+            }
+            
+            productRows = rows
         } catch { }
     }
     
@@ -87,6 +101,20 @@ struct HomeView: View {
         .background(Color.themeBlack)
     }
     
+    private var recentsSection: some View {
+        let columns = Array(repeating: GridItem(.flexible()), count: 2)
+    
+        return LazyVGrid(columns: columns) {
+            ForEach(products, id: \.self) { product in
+                RecentsCell(imageName: product.firstImage,
+                            title: product.title)
+                .asButton(.press) {
+                    
+                }
+            }
+        }
+    }
+    
     private func newReleaseSection(product: Product) -> some View {
         NewReleaseCell(imageName: product.firstImage,
                        headline: product.brand,
@@ -98,6 +126,34 @@ struct HomeView: View {
         }, onPlayPressed: {
             dump("DEBUG: should play media")
         })
+    }
+    
+    private var featuredSection: some View {
+        ForEach(productRows) { row in
+            VStack(spacing: 8) {
+                Text(row.title)
+                    .font(.title)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.themeWhite)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 16)
+                
+                ScrollView(.horizontal) {
+                    HStack(alignment: .top, spacing: 16) {
+                        ForEach(row.products) { product in
+                            ImageTitleRowCell(imageSize: 120,
+                                              imageName: product.firstImage,
+                                              title: product.title)
+                            .asButton(.press) {
+                                
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                }
+                .scrollIndicators(.hidden)
+            }
+        }
     }
 }
 
