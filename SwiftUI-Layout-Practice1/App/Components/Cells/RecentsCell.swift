@@ -25,7 +25,6 @@ struct RecentsCell: View {
 
         }
         .foregroundStyle(.white)
-//        .padding(.trailing, 8)
         .themeColors(isSelected: false)
         .cornerRadius(6)
     }

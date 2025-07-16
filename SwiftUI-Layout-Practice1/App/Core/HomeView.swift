@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftfulUI
 
 struct HomeView: View {
     @State private var currentUser: User? = nil
@@ -20,8 +19,12 @@ struct HomeView: View {
             ScrollView(.vertical) {
                 LazyVStack(pinnedViews: [.sectionHeaders], content: {
                     Section {
-                        VStack {
+                        VStack(spacing: 16) {
                             ProductGridSection(products: products)
+                            
+                            if let product = products.first {
+                                newReleaseSection(product: product)
+                            }
                         }
                         .padding(.horizontal, 16)
                         
@@ -82,6 +85,19 @@ struct HomeView: View {
         .padding(.vertical, 24)
         .padding(.leading, 8)
         .background(Color.themeBlack)
+    }
+    
+    private func newReleaseSection(product: Product) -> some View {
+        NewReleaseCell(imageName: product.firstImage,
+                       headline: product.brand,
+                       subHeadline: product.category,
+                       title: product.title,
+                       subtitle: product.description,
+                       onAddToPlaylistPressed: {
+            dump("DEBUG: should add to playlist")
+        }, onPlayPressed: {
+            dump("DEBUG: should play media")
+        })
     }
 }
 
