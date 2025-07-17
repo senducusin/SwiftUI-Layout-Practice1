@@ -121,7 +121,7 @@ struct HomeView: View {
                        headline: track.artist,
                        subHeadline: track.album,
                        title: track.trackName,
-                       subtitle: track.genre.rawValue,
+                       subtitle: track.genre.rawValue.capitalized,
                        onAddToPlaylistPressed: {
             dump("DEBUG: should add to playlist")
         }, onPlayPressed: {

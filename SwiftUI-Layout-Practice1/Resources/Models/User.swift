@@ -20,4 +20,19 @@ struct User: Codable, Identifiable {
     let email, phone, username, password: String
     let image: String
     let height, weight: Double
+    
+    static var mock: User {
+        User(id: 02131993,
+             firstName: "Sen",
+             lastName: "Ducusin",
+             age: 32,
+             email: "senducusin@gmail.com",
+             phone: "0919 008 1095",
+             username: "Sen",
+             password: "",
+             image: Constants.randomImage,
+             height: 5.5,
+             weight: 66
+        )
+    }
 }

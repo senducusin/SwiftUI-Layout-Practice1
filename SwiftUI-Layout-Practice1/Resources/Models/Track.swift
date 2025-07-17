@@ -15,6 +15,15 @@ struct Track: Codable, Identifiable, Hashable {
     let id, artist, trackName, album: String
     let albumCover: String
     let genre: Genre
+    
+    static var mock: Track {
+        Track(id: UUID().uuidString,
+              artist: "Artist",
+              trackName: "Song",
+              album: "Album",
+              albumCover: Constants.randomImage,
+              genre: .rock)
+    }
 }
 
 enum Genre: String, Codable {
