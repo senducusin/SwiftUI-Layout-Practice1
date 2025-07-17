@@ -11,8 +11,9 @@ import SwiftfulUI
 struct HomeView: View {
     @State private var currentUser: User? = nil
     @State private var selectedCategory: Category? = nil
-    @State private var products = [Product]()
-    @State private var productRows = [ProductRow]()
+    @State private var tracks = [Track]()
+    @State private var recentTracks = [Track]()
+    @State private var trackRows: [TrackRow] = []
     
     var body: some View {
         ZStack {
@@ -25,8 +26,8 @@ struct HomeView: View {
                             recentsSection
                                 .padding(.horizontal, 16)
                             
-                            if let product = products.first {
-                                newReleaseSection(product: product)
+                            if let track = tracks.first {
+                                newReleaseSection(track: track)
                                     .padding(.horizontal, 16)
                             }
                             
@@ -52,19 +53,19 @@ struct HomeView: View {
     private func getData() async {
         do {
             currentUser = try await MockDataHelper().getUsers().last
-            products = try await Array(MockDataHelper().getProducts().prefix(8))
+            tracks = try await MockDataHelper().getTracks()
+            recentTracks = try await MockDataHelper().getRecentTracks()
             
-            var rows = [ProductRow]()
-            let allBrands: Set<String> = Set(products.compactMap { $0.brand })
+            var rows = [TrackRow]()
+            let allGenres: Set<Genre> = Set(tracks.compactMap { $0.genre })
             
-            for brand in allBrands {
-                /// add after finalizing the mock data
-//                let products = products.filter { $0.brand == brand }
-                rows.append(ProductRow(title: brand.capitalized,
-                                       products: products))
+            for genre in allGenres {
+                let tracks = tracks.filter { $0.genre == genre }
+                rows.append(TrackRow(title: genre.rawValue.capitalized,
+                                     tracks: tracks))
             }
             
-            productRows = rows
+            trackRows = rows
         } catch { }
     }
     
@@ -105,9 +106,9 @@ struct HomeView: View {
         let columns = Array(repeating: GridItem(.flexible()), count: 2)
     
         return LazyVGrid(columns: columns) {
-            ForEach(products, id: \.self) { product in
-                RecentsCell(imageName: product.firstImage,
-                            title: product.title)
+            ForEach(recentTracks, id: \.self) { track in
+                RecentsCell(imageName: track.albumCover,
+                            title: track.trackName)
                 .asButton(.press) {
                     
                 }
@@ -115,12 +116,12 @@ struct HomeView: View {
         }
     }
     
-    private func newReleaseSection(product: Product) -> some View {
-        NewReleaseCell(imageName: product.firstImage,
-                       headline: product.brand,
-                       subHeadline: product.category,
-                       title: product.title,
-                       subtitle: product.description,
+    private func newReleaseSection(track: Track) -> some View {
+        NewReleaseCell(imageName: track.albumCover,
+                       headline: track.artist,
+                       subHeadline: track.album,
+                       title: track.trackName,
+                       subtitle: track.genre.rawValue,
                        onAddToPlaylistPressed: {
             dump("DEBUG: should add to playlist")
         }, onPlayPressed: {
@@ -129,7 +130,7 @@ struct HomeView: View {
     }
     
     private var featuredSection: some View {
-        ForEach(productRows) { row in
+        ForEach(trackRows) { row in
             VStack(spacing: 8) {
                 Text(row.title)
                     .font(.title)
@@ -137,13 +138,13 @@ struct HomeView: View {
                     .foregroundStyle(.themeWhite)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 16)
-                
+               
                 ScrollView(.horizontal) {
                     HStack(alignment: .top, spacing: 16) {
-                        ForEach(row.products) { product in
+                        ForEach(row.tracks) { track in
                             ImageTitleRowCell(imageSize: 120,
-                                              imageName: product.firstImage,
-                                              title: product.title)
+                                              imageName: track.albumCover,
+                                              title: track.trackName)
                             .asButton(.press) {
                                 
                             }

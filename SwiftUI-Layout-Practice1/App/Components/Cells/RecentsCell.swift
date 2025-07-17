@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RecentsCell: View {
     var imageName = Constants.randomImage
-    var title = "Random Title"
+    var title = "Random Title" 
     
     var body: some View {
         HStack(spacing: 16) {

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var users: [User] = []
-    @State private var products: [Product] = []
+    @State private var products: [Track] = []
     
     var body: some View {
         HomeView()
@@ -18,7 +18,7 @@ struct ContentView: View {
     private func getData() async {
         do {
             users = try await MockDataHelper().getUsers()
-            products = try await MockDataHelper().getProducts()
+//            products = try await MockDataHelper().getProducts()
         } catch {
             
         }

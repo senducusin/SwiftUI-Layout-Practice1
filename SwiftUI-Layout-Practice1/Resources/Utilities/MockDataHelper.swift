@@ -8,14 +8,14 @@
 import Foundation
 
 struct MockDataHelper {
-    func getProducts() async throws -> [Product] {
-        guard let url = URL(string: "https://dummyjson.com/products")
+    func getTracks() async throws -> [Track] {
+        guard let url = URL(string: "https://jarvis-nodejs-7zr6.onrender.com/api/music/all")
         else { throw URLError(.badURL) }
         
         let (data, _) = try await URLSession.shared.data(from: url)
-        let result = try JSONDecoder().decode(ProductResult.self, from: data)
+        let result = try JSONDecoder().decode(TrackResult.self, from: data)
         
-        return result.products
+        return result.tracks
     }
     
     func getUsers() async throws -> [User] {
@@ -26,5 +26,15 @@ struct MockDataHelper {
         let result = try JSONDecoder().decode(UserResult.self, from: data)
         
         return result.users
+    }
+    
+    func getRecentTracks() async throws -> [Track] {
+        guard let url = URL(string: "https://jarvis-nodejs-7zr6.onrender.com/api/music/recents")
+        else { throw URLError(.badURL) }
+        
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let result = try JSONDecoder().decode(TrackResult.self, from: data)
+        
+        return result.tracks
     }
 }
