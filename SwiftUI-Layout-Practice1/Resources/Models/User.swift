@@ -13,7 +13,7 @@ struct UserResult: Codable {
     let total, skip, limit: Int
 }
 
-struct User: Codable, Identifiable {
+struct User: Codable, Identifiable, Hashable {
     let id: Int
     let firstName, lastName: String
     let age: Int

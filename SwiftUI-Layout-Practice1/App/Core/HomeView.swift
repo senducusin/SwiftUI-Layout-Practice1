@@ -7,12 +7,11 @@
 
 import SwiftUI
 import SwiftfulUI
-import SwiftfulRouting
 
 struct HomeView: View {
-    @Environment(\.router) var router
+    @Environment(Router.self) var router
     
-    @State private var currentUser: User? = .mock
+    @State private var currentUser: User?
     @State private var selectedCategory: Category? = nil
     @State private var tracks = [Track]()
     @State private var recentTracks = [Track]()
@@ -54,6 +53,11 @@ struct HomeView: View {
     }
     
     private func getData() async {
+        guard currentUser == nil,
+              tracks.isEmpty,
+              trackRows.isEmpty
+        else { return }
+        
         do {
             currentUser = try await MockDataHelper().getUsers().last
             tracks = try await MockDataHelper().getTracks()
@@ -122,9 +126,8 @@ struct HomeView: View {
     private func navigateToPlaylistView(track: Track) {
         guard let currentUser else { return }
         
-        router.showScreen { _ in
-            PlaylistView(track: track, user: currentUser)
-        }
+        let model = RouteModel(user: currentUser, track: track)
+        router.navigateToPlaylist(model)
     }
     
     private func newReleaseSection(track: Track) -> some View {

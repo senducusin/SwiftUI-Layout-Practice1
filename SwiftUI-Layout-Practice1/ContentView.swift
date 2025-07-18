@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct ContentView: View {
-//    @Environment(\.router) var router
-    
+
     var body: some View {
         HomeView()
+            .withRouter()
     }
 }
 

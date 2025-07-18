@@ -7,10 +7,9 @@
 
 import SwiftUI
 import SwiftfulUI
-import SwiftfulRouting
 
 struct PlaylistView: View {
-    @Environment(\.router) var router
+    @Environment(Router.self) var router
     
     var track: Track = .mock
     var user: User = .mock
@@ -95,7 +94,7 @@ struct PlaylistView: View {
                 .background(showHeader ? Color.themeGray.opacity(0.001) : Color.themeGray.opacity(0.7))
                 .clipShape(Circle())
                 .onTapGesture {
-                    router.dismissScreen()
+                    router.dismissView()
                 }
                 .padding(.leading, 16)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -106,9 +105,9 @@ struct PlaylistView: View {
     }
     
     private func navigateToPlaylistView(track: Track) {
-        router.showScreen { _ in
-            PlaylistView(track: track, user: user)
-        }
+
+        let model = RouteModel(user: user, track: track)
+        router.navigateToPlaylist(model)
     }
 }
 
