@@ -18,6 +18,16 @@ struct MockDataHelper {
         return result.tracks
     }
     
+    func getTracks(by genre: Genre) async throws -> [Track] {
+        guard let url = URL(string: "https://jarvis-nodejs-7zr6.onrender.com/api/music/\(genre.rawValue)")
+        else { throw URLError(.badURL) }
+        
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let result = try JSONDecoder().decode(TrackResult.self, from: data)
+        
+        return result.tracks
+    }
+    
     func getUsers() async throws -> [User] {
         guard let url = URL(string: "https://dummyjson.com/users")
         else { throw URLError(.badURL) }
