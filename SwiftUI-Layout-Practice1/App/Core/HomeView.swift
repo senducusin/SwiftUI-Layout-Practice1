@@ -7,9 +7,12 @@
 
 import SwiftUI
 import SwiftfulUI
+import SwiftfulRouting
 
 struct HomeView: View {
-    @State private var currentUser: User? = nil
+    @Environment(\.router) var router
+    
+    @State private var currentUser: User? = .mock
     @State private var selectedCategory: Category? = nil
     @State private var tracks = [Track]()
     @State private var recentTracks = [Track]()
@@ -110,9 +113,17 @@ struct HomeView: View {
                 RecentsCell(imageName: track.albumCover,
                             title: track.trackName)
                 .asButton(.press) {
-                    
+                    navigateToPlaylistView(track: track)
                 }
             }
+        }
+    }
+    
+    private func navigateToPlaylistView(track: Track) {
+        guard let currentUser else { return }
+        
+        router.showScreen { _ in
+            PlaylistView(track: track, user: currentUser)
         }
     }
     
@@ -123,9 +134,9 @@ struct HomeView: View {
                        title: track.trackName,
                        subtitle: track.genre.rawValue.capitalized,
                        onAddToPlaylistPressed: {
-            dump("DEBUG: should add to playlist")
+            
         }, onPlayPressed: {
-            dump("DEBUG: should play media")
+            navigateToPlaylistView(track: track)
         })
     }
     
@@ -146,7 +157,7 @@ struct HomeView: View {
                                               imageName: track.albumCover,
                                               title: track.trackName)
                             .asButton(.press) {
-                                
+                                navigateToPlaylistView(track: track)
                             }
                         }
                     }

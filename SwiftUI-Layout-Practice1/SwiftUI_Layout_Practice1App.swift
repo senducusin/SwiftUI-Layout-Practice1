@@ -6,12 +6,26 @@
 //
 
 import SwiftUI
+import SwiftfulRouting
 
 @main
 struct SwiftUI_Layout_Practice1App: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RouterView { _ in
+                ContentView()
+            }
         }
+    }
+}
+
+extension UINavigationController: @retroactive UIGestureRecognizerDelegate {
+    open override func viewDidLoad() {
+        super.viewDidLoad()
+        interactivePopGestureRecognizer?.delegate = self
+    }
+    
+    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return viewControllers.count > 1
     }
 }

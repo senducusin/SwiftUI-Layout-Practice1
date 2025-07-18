@@ -8,20 +8,10 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var users: [User] = []
-    @State private var products: [Track] = []
+//    @Environment(\.router) var router
     
     var body: some View {
         HomeView()
-    }
-    
-    private func getData() async {
-        do {
-            users = try await MockDataHelper().getUsers()
-//            products = try await MockDataHelper().getProducts()
-        } catch {
-            
-        }
     }
 }
 

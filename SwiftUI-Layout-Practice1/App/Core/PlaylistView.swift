@@ -7,11 +7,13 @@
 
 import SwiftUI
 import SwiftfulUI
+import SwiftfulRouting
 
 struct PlaylistView: View {
+    @Environment(\.router) var router
+    
     var track: Track = .mock
     var user: User = .mock
-    var genre: Genre = .rock
     
     @State private var tracks = [Track]()
     @State private var showHeader: Bool = true
@@ -51,7 +53,7 @@ struct PlaylistView: View {
                         title: track.trackName,
                         subtitle: track.artist,
                         onCellPressed: {
-                            
+                            navigateToPlaylistView(track: track)
                         },
                         onMorePressed: {
                             
@@ -62,31 +64,8 @@ struct PlaylistView: View {
             }
             .scrollIndicators(.hidden)
             
-            ZStack {
-                Text(track.trackName)
-                    .font(.headline)
-                    .padding(.vertical, 16)
-                    .frame(maxWidth: .infinity)
-                    .offset(y: showHeader ? 0 : -40)
-                    .background(Color.themeBlack)
-                    .opacity(showHeader ? 1 : 0)
-                
-                Image(systemName: "chevron.left")
-                    .font(.title3)
-                    .padding(10)
-                    .background(showHeader ? Color.themeGray.opacity(0.001) : Color.themeGray.opacity(0.7))
-                    .clipShape(Circle())
-                    .onTapGesture {
-                        
-                    }
-                    .padding(.leading, 16)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                
-            }
-            .foregroundStyle(.themeWhite)
-            .animation(.smooth(duration: 0.2), value: showHeader)
-            .frame(maxHeight: .infinity, alignment: .top)
-        
+            header
+                .frame(maxHeight: .infinity, alignment: .top)
         }
         .task {
             await getData()
@@ -96,8 +75,40 @@ struct PlaylistView: View {
     
     private func getData() async {
         do {
-            tracks = try await MockDataHelper().getTracks(by: genre)
+            tracks = try await MockDataHelper().getTracks(by: track.genre)
         } catch { }
+    }
+    
+    private var header: some View {
+        ZStack {
+            Text(track.trackName)
+                .font(.headline)
+                .padding(.vertical, 16)
+                .frame(maxWidth: .infinity)
+                .offset(y: showHeader ? 0 : -40)
+                .background(Color.themeBlack)
+                .opacity(showHeader ? 1 : 0)
+            
+            Image(systemName: "chevron.left")
+                .font(.title3)
+                .padding(10)
+                .background(showHeader ? Color.themeGray.opacity(0.001) : Color.themeGray.opacity(0.7))
+                .clipShape(Circle())
+                .onTapGesture {
+                    router.dismissScreen()
+                }
+                .padding(.leading, 16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+        }
+        .foregroundStyle(.themeWhite)
+        .animation(.smooth(duration: 0.2), value: showHeader)
+    }
+    
+    private func navigateToPlaylistView(track: Track) {
+        router.showScreen { _ in
+            PlaylistView(track: track, user: user)
+        }
     }
 }
 
